@@ -1,31 +1,81 @@
-﻿@{
+﻿@model IndexViewModels
+@{
     ViewBag.Title = "Home Page";
 }
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+<style>
+    .content {
+        margin-top:20px;
+    }
+</style>
+
+<div class="row content">
+    <div class="col-md-8">
+        
+        @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { enctype = "multipart/form-data", name = "forms" }))
+        {
+            @Html.TextBoxFor(model=>model.SearchCondition,Model.SearchCondition,new { @style = "margin-top:20px;" })
+            <button class="btn btn-primary" type="submit">搜索</button>
+        }
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>PhoneNumber</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.List)
+                {
+                <tr id="tr@(item.id)">
+                    <td>@item.Name</td>
+                    <td>@item.Address</td>
+                    <td>@item.PhoneNumber</td>
+                    <td>@item.Email</td>
+                    <td>
+                        <button onclick="Edit(@(item.id))" style="margin-right:10px">修改</button>
+                        <button onclick="Delete(@(item.id))" >刪除</button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-4">
+       <div id="info">
+           @Html.Partial("~/Views/Home/_EditInfo.cshtml",Model.DefaultSingle)
+       </div>
+    </div>
+   
 </div>
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-</div>
+<script>
+
+    function Delete(id)
+    {
+        $.post("@Url.Action("Delete", "Home")",
+        {id:id},
+        function () {
+            alert('刪除成功!!');
+            $('#tr' + id).remove();
+        });
+    }
+    function Edit(id)
+    {
+        $.post("@Url.Action("_EditInfo", "Home")",
+        {id:id},
+        function (result) {
+            $("#info").html(result);
+        });
+    }
+</script>
+
+@if (TempData["message"] != null)
+{
+    <script type="text/javascript">
+        var message = @Html.Raw(Json.Encode(TempData["message"]));
+        alert(message);
+    </script>
+}
