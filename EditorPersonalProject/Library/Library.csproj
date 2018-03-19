@@ -83,6 +83,7 @@
     <None Include="Client\db\dbEditorPersonalProject.edmx.diagram">
       <DependentUpon>dbEditorPersonalProject.edmx</DependentUpon>
     </None>
+    <None Include="dbBack\dbPersonal.bak" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
